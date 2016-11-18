@@ -13,6 +13,7 @@ export default ({ config, db }) => {
 
 	api.post('/new_user', (req, res) => {
 		const {first_name, last_name, username, hash, phone_number, email} = req.body;
+        
         db.query('INSERT INTO users SET ?', req.body, function(err, result){
             if(err){
                 console.log(err);
@@ -24,6 +25,8 @@ export default ({ config, db }) => {
     
     api.post('/login', (req, res) => {
         const {username, hash} = req.body;
+        req.session.username = username;
+        console.log(req.session)
         db.query('SELECT * FROM users WHERE username = \'' + username + '\' and hash = \'' + hash + '\'', (err, rows, fields) => {
             if(rows.length != 1){
                 res.send("failure");
@@ -35,6 +38,7 @@ export default ({ config, db }) => {
     });
     
     api.get('/users', (req, res) => {
+        console.log(req.session)
         db.query('SELECT * FROM users', (err, rows, fields) => {
             res.send(rows)
         })
@@ -52,9 +56,9 @@ export default ({ config, db }) => {
         const userId = req.params.userId;
         const re = /(?:\.([^.]+))?$/;
         const fileType = re.exec(originalName)[0];
-       const queryStr = 'INSERT INTO images(user_id, image) VALUES (' + userId + ', \'' + fileType + '\')';
+       const insertImagesQuery = 'INSERT INTO images(user_id, image) VALUES (' + userId + ', \'' + fileType + '\')';
        const originalName = req.file.originalname;
-       db.query(queryStr, (err, result) => {
+       db.query(insertImagesQuery, (err, result) => {
             if(err){
                 console.log(err);
             }else{
@@ -70,14 +74,57 @@ export default ({ config, db }) => {
     });
     
     api.get('/image/:userId', (req, res) => {
-        var queryStr = 'SELECT * FROM images WHERE user_id = ' + req.params.userId + '';
-          db.query(queryStr, (err, rows, fields) => {
-              if(err){
-                  res.send(err);
-              }else{
-                  res.send(rows);
-              }
-          })
+        var getImagesQuery = 'SELECT * FROM images WHERE user_id = ' + req.params.userId + '';
+        db.query(getImagesQuery, (err, rows, fields) => {
+            if(err){
+                res.send(err);
+            }else{
+                res.send(rows);
+            }
+        })
+    })
+    
+    api.get('/notification_settings/:userId', (req, res) => {
+        const userId = req.params.userId;
+        const getNotificationSettingsQuery = 'SELECT * FROM user_settings WHERE user_id=' + userId;
+        console.log(getNotificationSettingsQuery)
+        db.query(getNotificationSettingsQuery, (err, rows, fields) => {
+            if(err){
+                console.log(err)
+                res.send(err)
+            }else{
+                res.send(rows)
+            }
+        })
+    })
+    
+    api.post('/notification_settings', (req, res) => {
+        if(req.body.length < 1){
+            res.end("nothing to save")
+        }
+        console.log(req.body)
+        const userId = req.body[0].user_id
+        const settings = req.body.filter(setting => {
+            if(setting.new){
+                delete setting.new
+                delete setting.setting_id
+                return setting
+            }
+        })
+        console.log(settings);
+        if(settings.length < 1){
+            res.end("nothing to add");
+            return;
+        } 
+        const postNotificationSettingsQuery = 'INSERT INTO user_settings SET ?';
+        db.query(postNotificationSettingsQuery, settings, (err, result) => {
+            if(err){
+                console.log(err)
+                res.send(err)
+            }else{
+                res.send("success")
+            }
+        })
     })
 
 
