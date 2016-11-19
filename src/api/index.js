@@ -54,10 +54,11 @@ export default ({ config, db }) => {
     var upload = multer({ storage: storage });
     api.post('/image/add/:userId/:deviceid', upload.single('file'), (req, res) => {
         const userId = req.params.userId;
+        const originalName = req.file.originalname;
         const re = /(?:\.([^.]+))?$/;
         const fileType = re.exec(originalName)[0];
        const insertImagesQuery = 'INSERT INTO images(user_id, image) VALUES (' + userId + ', \'' + fileType + '\')';
-       const originalName = req.file.originalname;
+       
        db.query(insertImagesQuery, (err, result) => {
             if(err){
                 console.log(err);
@@ -102,7 +103,6 @@ export default ({ config, db }) => {
         if(req.body.length < 1){
             res.end("nothing to save")
         }
-        console.log(req.body)
         const userId = req.body[0].user_id
         const settings = req.body.filter(setting => {
             if(setting.new){
@@ -111,7 +111,6 @@ export default ({ config, db }) => {
                 return setting
             }
         })
-        console.log(settings);
         if(settings.length < 1){
             res.end("nothing to add");
             return;
