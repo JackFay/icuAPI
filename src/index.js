@@ -21,11 +21,15 @@ app.use(bodyParser.json({
 }));
 
 app.use(express.static('uploads'));
-
+app.use(express.static('dist/'));
 app.use(cookieSession({
     name: 'session',
     keys: ['test']
 }))
+
+app.get('/', (req, res) => {
+    res.sendFile('/dist/index.html')
+})
 
 // connect to db
 initializeDb( db => {
@@ -36,7 +40,7 @@ initializeDb( db => {
 	// api router
 	app.use('/api', api({ config, db }));
 
-	app.server.listen(process.env.PORT || config.port);
+	app.server.listen(8000);
 
 	console.log(`Started on port ${app.server.address().port}`);
 });
