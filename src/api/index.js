@@ -145,8 +145,8 @@ export default ({ config, db }) => {
                 var currentMin = currentTime.getMinutes()
                 console.log(startHour, startMin, endHour, endMin, currentHour, currentMin)
                 
-                if(currentTime.getHours() >= startHour){
-                    if(currentTime.getHours() <= endHour){
+                if(currentHour >= startHour){
+                    if(currentHour <= endHour){
                         console.log("Sending notification...")
                         var client = twilio('AC829a39279ac90acd316da00059e17063', '9a00afc719a07f1a3e84f350f5817027')
                         client.sendMessage({
