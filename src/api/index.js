@@ -10,6 +10,14 @@ export default ({ config, db }) => {
 
 	// mount the facets resource
 	api.use('/facets', facets({ config, db }));
+    
+    api.get('/session', (req, res) => {
+        if(req.session.username){
+            res.send("logged out")
+        }else{
+            res.send("logged in")
+        }
+    })
 
 	api.post('/new_user', (req, res) => {
 		const {first_name, last_name, username, hash, phone_number, email} = req.body;
