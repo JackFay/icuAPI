@@ -143,7 +143,7 @@ export default ({ config, db }) => {
                 var endMin = end.substring(3, end.length)
                 var currentHour = currentTime.getHours()
                 var currentMin = currentTime.getMinutes()
-                //console.log(startHour, startMin, endHour, endMin, currentHour, currentMin)
+                console.log(startHour, startMin, endHour, endMin, currentHour, currentMin)
                 
                 if(currentTime.getHours() >= startHour){
                     if(currentTime.getHours() <= endHour){
