@@ -6,7 +6,8 @@ import initializeDb from './db';
 import middleware from './middleware';
 import api from './api';
 import config from './config.json';
-import cookieSession from 'cookie-session';
+import session from 'express-session';
+var MySQLStore = require('express-mysql-session')(session)
 
 let app = express();
 app.server = http.createServer(app);
@@ -22,10 +23,35 @@ app.use(bodyParser.json({
 
 app.use(express.static('uploads'));
 app.use(express.static('dist/'));
-app.use(cookieSession({
-    name: 'session',
-    keys: ['test']
+
+
+/*======SESSIONS========*/
+var sessionStoreConfig = {
+    user: 'root',
+    password: 'root',
+    host: 'localhost',
+    database: 'team',
+    port: 3306,
+    schema: {
+        tableName: 'sessions',
+        columnNames: {
+            session_id: 'session_id',
+            expires: 'expires',
+            data: 'session_data'
+        }
+    }
+}
+
+app.use(session({
+        store: new MySQLStore(sessionStoreConfig),
+        secret: 'test',
+        resave: true,
+        saveUninitialized: true
 }))
+
+
+
+/*========END SESSION=====*/
 
 app.get('/', (req, res) => {
     res.sendFile('/dist/index.html')
@@ -39,6 +65,21 @@ initializeDb( db => {
 
 	// api router
 	app.use('/api', api({ config, db }));
+    
+    app.post('/login', (req, res) => {
+        const {username, hash} = req.body;
+        req.session.username = username;
+        console.log(req.session)
+        db.query('SELECT * FROM users WHERE username = \'' + username + '\' and hash = \'' + hash + '\'', (err, rows, fields) => {
+            if(rows.length != 1){
+                res.send("failure");
+            }else{
+                res.send(rows[0]);
+            }
+        });
+
+    });
+
 
 	app.server.listen(8000);
 

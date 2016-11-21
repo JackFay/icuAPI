@@ -5,19 +5,14 @@ import multer from "multer";
 import fs from "fs";
 
 
+
 export default ({ config, db }) => {
 	let api = Router();
+    
 
 	// mount the facets resource
 	api.use('/facets', facets({ config, db }));
-    
-    api.get('/session', (req, res) => {
-        if(req.session.username){
-            res.send("logged out")
-        }else{
-            res.send("logged in")
-        }
-    })
+        
 
 	api.post('/new_user', (req, res) => {
 		const {first_name, last_name, username, hash, phone_number, email} = req.body;
@@ -30,21 +25,7 @@ export default ({ config, db }) => {
             console.log(result);
         });
 	});
-    
-    api.post('/login', (req, res) => {
-        const {username, hash} = req.body;
-        req.session.username = username;
-        console.log(req.session)
-        db.query('SELECT * FROM users WHERE username = \'' + username + '\' and hash = \'' + hash + '\'', (err, rows, fields) => {
-            if(rows.length != 1){
-                res.send("failure");
-            }else{
-                res.send(rows[0]);
-            }
-        });
         
-    });
-    
     api.get('/users', (req, res) => {
         console.log(req.session)
         db.query('SELECT * FROM users', (err, rows, fields) => {

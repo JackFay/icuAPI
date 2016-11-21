@@ -52,3 +52,8 @@ INSERT INTO notification_options VALUE (DEFAULT, "email");
 INSERT INTO notification_options VALUE (DEFAULT, "both");
 
 
+CREATE TABLE sessions(
+    [sid] [varchar](255) NOT NULL PRIMARY KEY,
+    [session] [varchar](max) NOT NULL,
+    [expires] [datetime] NOT NULL
+)
