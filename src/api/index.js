@@ -141,7 +141,7 @@ export default ({ config, db }) => {
                 var startMin = start.substring(3, start.length)
                 var endHour = end.substring(0, end.length - 3)
                 var endMin = end.substring(3, end.length)
-                var currentHour = currentTime.getHours()
+                var currentHour = currentTime.getHours() - 6
                 var currentMin = currentTime.getMinutes()
                 console.log(startHour, startMin, endHour, endMin, currentHour, currentMin)
                 
