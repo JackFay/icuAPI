@@ -128,6 +128,19 @@ export default ({ config, db }) => {
             }
         })
     })
+    
+    api.post('/delete_notification', (req, res) => {
+        console.log(req.body)
+        const setting_id = req.body.id;
+        db.query('DELETE FROM user_settings WHERE setting_id = ' + setting_id, (err, result) => {
+            if(err){
+                console.log(err)
+                res.send("error deleting setting")
+            }else{
+                res.send("setting deleted")
+            }
+        })
+    })
 
     function notification_sender(currentTime, userId, image){
         db.query('SELECT * FROM user_settings WHERE user_id = ' + userId, (err, rows, fields) => {
