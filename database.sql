@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS devices CASCADE;
 CREATE TABLE devices (
   device_id INTEGER AUTO_INCREMENT,
   user_id INTEGER,
+  activated boolean,
   FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
   PRIMARY KEY(device_id)
 );

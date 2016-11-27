@@ -141,6 +141,20 @@ export default ({ config, db }) => {
             }
         })
     })
+    
+    api.post('/get_devices', (req, res) => {
+        const userId = req.body.user
+        const getDevicesQuery = "SELECT * FROM devices WHERE user_id=" + userId;
+        
+        db.query(getDevicesQuery, (err, rows, fields) => {
+            if(err){
+                console.log(err);
+                res.send("error");
+            }else{
+                res.send(rows);
+            }
+        })
+    })
 
     function notification_sender(currentTime, userId, image){
         db.query('SELECT * FROM user_settings WHERE user_id = ' + userId, (err, rows, fields) => {
