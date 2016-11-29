@@ -15,6 +15,7 @@ CREATE TABLE devices (
   device_id INTEGER AUTO_INCREMENT,
   user_id INTEGER,
   activated boolean,
+  device_name varchar(200),
   FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
   PRIMARY KEY(device_id)
 );
