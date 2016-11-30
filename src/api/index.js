@@ -157,6 +157,15 @@ export default ({ config, db }) => {
     })
 
     function notification_sender(currentTime, userId, image){
+        var phoneNumber = "";
+        db.query('SELECT phone_number FROM users WHERE user_id = ' + userId, (err, rows, fields) => {
+            if(err){
+                console.log(err)
+            }else{
+                phoneNumber = rows[0].phone_number
+            }
+        })
+        
         db.query('SELECT * FROM user_settings WHERE user_id = ' + userId, (err, rows, fields) => {
             for(var i = 0; i < rows.length; i++){
                 var start = rows[i].start_time;
@@ -177,7 +186,7 @@ export default ({ config, db }) => {
                         console.log("Sending notification...")
                         var client = twilio('AC829a39279ac90acd316da00059e17063', '9a00afc719a07f1a3e84f350f5817027')
                         client.sendMessage({
-                            to: '+15734246735',
+                            to: phoneNumber,
                             from: '+16363361341',
                             body: 'Alert! Motion detected by your Raspberry Pi!',
                             mediaUrl: "http://ec2-35-160-234-54.us-west-2.compute.amazonaws.com/" + image
