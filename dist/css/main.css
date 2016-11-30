@@ -1,3 +1,4 @@
+
 .Header{
     position: fixed;
     width:100%;
@@ -519,4 +520,27 @@ p.copyright {
     width: 100%;
     padding-top: 10px;
     padding-bottom: 10px;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    background-color: aliceblue;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+i{
+    cursor: hand;
+    cursor: pointer;
+    padding-left: 10px;
 }
