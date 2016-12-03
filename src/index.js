@@ -7,6 +7,7 @@ import middleware from './middleware';
 import api from './api';
 import config from './config.json';
 import session from 'express-session';
+import path from "path";
 var MySQLStore = require('express-mysql-session')(session)
 
 let app = express();
@@ -22,7 +23,7 @@ app.use(bodyParser.json({
 }));
 
 app.use(express.static('uploads'));
-app.use(express.static('dist/'));
+app.use(express.static(path.join(__dirname, '/../dist/')));
 
 
 /*======SESSIONS========*/
@@ -54,12 +55,15 @@ app.use(session({
 /*========END SESSION=====*/
 
 app.get('/', (req, res) => {
-    res.sendFile('/dist/index.html')
+    if(req.session.username){
+        res.sendFile(path.join(__dirname, '/../dist/index.html'))
+    }
 })
+
+
 
 // connect to db
 initializeDb( db => {
-
 	// internal middleware
 	app.use(middleware({ config, db }));
 
@@ -67,14 +71,16 @@ initializeDb( db => {
 	app.use('/api', api({ config, db }));
     
     app.post('/login', (req, res) => {
+        console.log(req.body);
         const {username, hash} = req.body;
-        req.session.username = username;
-        console.log(req.session)
         db.query('SELECT * FROM users WHERE username = \'' + username + '\' and hash = \'' + hash + '\'', (err, rows, fields) => {
+            console.log(rows)
             if(rows.length != 1){
                 res.send("failure");
             }else{
-                res.send(rows[0]);
+                req.session.username = rows[0].username
+                req.session.user_id = rows[0].user_id
+                res.send(rows[0])
             }
         });
 

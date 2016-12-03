@@ -158,11 +158,13 @@ export default ({ config, db }) => {
 
     function notification_sender(currentTime, userId, image){
         var phoneNumber = "";
+        var email = "";
         db.query('SELECT phone_number FROM users WHERE user_id = ' + userId, (err, rows, fields) => {
             if(err){
                 console.log(err)
             }else{
                 phoneNumber = rows[0].phone_number
+                email = rows[0].email
             }
         })
         
@@ -179,6 +181,7 @@ export default ({ config, db }) => {
                 var endMin = end.substring(3, end.length)
                 var currentHour = currentTime.getHours() - 6
                 var currentMin = currentTime.getMinutes()
+                var notificationOption = rows[i].notification_option_id
                 console.log(startHour, startMin, endHour, endMin, currentHour, currentMin)
                 
                 if(currentHour >= startHour){
