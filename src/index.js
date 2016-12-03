@@ -55,9 +55,7 @@ app.use(session({
 /*========END SESSION=====*/
 
 app.get('/', (req, res) => {
-    if(req.session.username){
-        res.sendFile(path.join(__dirname, '/../dist/index.html'))
-    }
+    res.sendFile(path.join(__dirname, '/dist/index.html'))
 })
 
 
