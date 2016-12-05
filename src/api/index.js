@@ -51,7 +51,7 @@ export default ({ config, db }) => {
         const fileType = re.exec(originalName)[0];
         const insertImagesQuery = 'INSERT INTO images(user_id, image) VALUES (' + userId + ', \'' + fileType + '\')';
         const currentTime = new Date();
-        
+        console.log('hello...from post image')
        db.query(insertImagesQuery, (err, result) => {
             if(err){
                 console.log(err);
@@ -157,6 +157,7 @@ export default ({ config, db }) => {
     })
 
     function notification_sender(currentTime, userId, image){
+        console.log('hello')
         var phoneNumber = "";
         var email = "";
         db.query('SELECT phone_number FROM users WHERE user_id = ' + userId, (err, rows, fields) => {
@@ -179,22 +180,45 @@ export default ({ config, db }) => {
                 var startMin = start.substring(3, start.length)
                 var endHour = end.substring(0, end.length - 3)
                 var endMin = end.substring(3, end.length)
-                var currentHour = currentTime.getHours() - 6
+                var currentHour = (currentTime.getHours() + 18) % 24
                 var currentMin = currentTime.getMinutes()
                 var notificationOption = rows[i].notification_option_id
-                console.log(startHour, startMin, endHour, endMin, currentHour, currentMin)
+                console.log(startHour, startMin, endHour, endMin, currentHour, currentMin, notificationOption)
                 
                 if(currentHour >= startHour){
                     if(currentHour <= endHour){
-                        console.log("Sending notification...")
                         var client = twilio('AC829a39279ac90acd316da00059e17063', '9a00afc719a07f1a3e84f350f5817027')
-                        client.sendMessage({
-                            to: phoneNumber,
-                            from: '+16363361341',
-                            body: 'Alert! Motion detected by your Raspberry Pi!',
-                            mediaUrl: "http://ec2-35-160-234-54.us-west-2.compute.amazonaws.com/" + image
-                        })
-                       
+                        if(notificationOption == 1){
+                            console.log("Sending email...")
+                            client.sendMessage({
+                                to: 'jrfay08@gmail.com',
+                                from: '+16363361341',
+                                body: 'Alert! Motion detected by your Raspberry Pi!',
+                                mediaUrl: "http://ec2-35-160-234-54.us-west-2.compute.amazonaws.com/" + image
+                            })
+                        }else if (notificationOption == 2){
+                            console.log("Sending text...")
+                            client.sendMessage({
+                                to: '+15734246735',
+                                from: '+16363361341',
+                                body: 'Alert! Motion detected by your Raspberry Pi!',
+                                mediaUrl: "http://ec2-35-160-234-54.us-west-2.compute.amazonaws.com/" + image
+                            })
+                        }else if(notificationOption == 3){
+                            console.log("Sending both...")
+                            client.sendMessage({
+                                to: '+15734246735',
+                                from: '+16363361341',
+                                body: 'Alert! Motion detected by your Raspberry Pi!',
+                                mediaUrl: "http://ec2-35-160-234-54.us-west-2.compute.amazonaws.com/" + image
+                            })
+                            client.sendMessage({
+                                to: '+15734246735',
+                                from: '+16363361341',
+                                body: 'Alert! Motion detected by your Raspberry Pi!',
+                                mediaUrl: "http://ec2-35-160-234-54.us-west-2.compute.amazonaws.com/" + image
+                            })
+                        }
                         return;
                     }
                 }                
